@@ -1,0 +1,15 @@
+{
+  "domain": "digitransit",
+  "name": "digitransit",
+  "codeowners": [
+    "@mallonbacka"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/Mallonbacka/custom-component-digitransit",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/Mallonbacka/custom-component-digitransit/issues",
+  "requirements": [
+    "python-graphql-client>=0.4.3"
+  ],
+  "version": "0.1.0"
+}
