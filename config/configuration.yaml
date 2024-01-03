@@ -6,3 +6,11 @@ logger:
   default: info
   logs:
     custom_components.integration_blueprint: debug
+
+# To develop on GitHub Codespaces
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.3
+    - 127.0.0.1
+    - ::1
