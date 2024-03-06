@@ -1,7 +1,7 @@
 colorlog==6.8.2
 homeassistant==2023.8.0
 pip>=21.0,<24.1
-ruff==0.2.2
+ruff==0.3.0
 
 # https://github.com/home-assistant/core/issues/95192
 urllib3>=1.26.5,<2
