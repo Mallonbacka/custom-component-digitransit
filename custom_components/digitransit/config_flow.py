@@ -34,7 +34,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 _errors["base"] = "auth"
             else:
                 try:
-                    stop_name, api_id = await self._get_stop_name_and_id(user_input['stop_code'])
+                    stop_name, api_id = await self.identfiy_stop(user_input['search_type'], user_input['search_term'])
                 except DigitransitNoStopFoundError:
                     _errors["base"] = "no_stop_found"
                 except DigitransitMultipleStopsFoundError:
@@ -54,7 +54,13 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             type=selector.TextSelectorType.TEXT
                         ),
                     ),
-                    vol.Required("stop_code", default=(user_input or {}).get("stop_code")) : selector.TextSelector(
+                    vol.Required("search_type", default=(user_input or {}).get("search_type")) : selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=["stop_code", "stop_gtfs_id"],
+                            translation_key="search_types",
+                        ),
+                    ),
+                    vol.Required("search_term", default=(user_input or {}).get("search_term")) : selector.TextSelector(
                         selector.TextSelectorConfig(
                             type=selector.TextSelectorType.TEXT
                         )
@@ -64,11 +70,24 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=_errors,
         )
 
+    async def identfiy_stop(self, search_type, search_term):
+        """Take the search criteria and return a stop name and code."""
+        if(search_type == "stop_code"):
+            return await self._get_stop_name_and_id_by_code(search_term)
+        elif(search_type == "stop_gtfs_id"):
+            return await self._get_stop_name_and_id_by_gtfs(search_term)
+        else:
+            raise DigitransitNoStopFoundError
+
     async def _test_api_key(self, digitransit_api_key: str) -> None:
         """Validate credentials."""
         self.client = DigitransitGraphQLWrapper(digitransit_api_key, hass=self.hass)
         await self.client.test_api_key()
 
-    async def _get_stop_name_and_id(self, stop_code: str) -> str:
+    async def _get_stop_name_and_id_by_code(self, stop_code: str) -> str:
         """Get the official stop name for the code."""
-        return await self.client.get_stop_name_and_id(stop_code)
+        return await self.client.get_stop_name_and_id_by_code(stop_code)
+
+    async def _get_stop_name_and_id_by_gtfs(self, gtfs_id: str) -> str:
+        """Get the official stop name for the code."""
+        return await self.client.get_stop_name_and_id_by_gtfs(gtfs_id)
