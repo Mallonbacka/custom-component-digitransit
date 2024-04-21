@@ -40,7 +40,7 @@ class DigitransitGraphQLWrapper:
         """Call sync_test_api_key async."""
         return await self.hass.async_add_executor_job(self.sync_test_api_key)
 
-    def sync_get_stop_name_and_id(self, stop_code):
+    def sync_get_stop_name_and_id_by_code(self, stop_code):
         """Find a stop name and ID from a stop code or name."""
         query = """query stopQuery($stop_code: String) { stops(name: $stop_code, feeds: ["HSL"], maxResults: 2){name,desc,code,platformCode,gtfsId}}"""
         variables = { "stop_code": stop_code }
@@ -56,14 +56,31 @@ class DigitransitGraphQLWrapper:
             stop = results['data']['stops'][0]
             return stop['name'] + " (" + stop['code'] + ")", stop['gtfsId']
 
-    async def get_stop_name_and_id(self, stop_code):
+    async def get_stop_name_and_id_by_code(self, stop_code):
         """Call sync_get_stop_name_and_id async."""
-        return await self.hass.async_add_executor_job(self.sync_get_stop_name_and_id, stop_code)
+        return await self.hass.async_add_executor_job(self.sync_get_stop_name_and_id_by_code, stop_code)
+
+    def sync_get_stop_name_and_id_by_gtfs(self, gtfs_id):
+        """Find a stop name and ID from a GTFS id."""
+        query = f"""{{ stop(id: "{gtfs_id}"){{name,code,platformCode,gtfsId}}}}"""
+        results = self.client.execute(query=query)
+        if(len(results['data']['stop']) == {}):
+            # No results
+            raise DigitransitNoStopFoundError
+        else:
+            # Good to go
+            stop = results['data']['stop']
+            return stop['name'] + " (" + stop['code'] + ")", stop['gtfsId']
+
+    async def get_stop_name_and_id_by_gtfs(self, gtfs_id):
+        """Call sync_get_stop_name_and_id async."""
+        return await self.hass.async_add_executor_job(self.sync_get_stop_name_and_id_by_gtfs, gtfs_id)
 
     def sync_get_stop_data(self, gtfs_id):
         """Get stop times from a saved GTFS id."""
         query = """{ stop(id: "$stop_id") { name, stoptimesWithoutPatterns { scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign, trip { routeShortName } } } }"""
         results = self.client.execute(query=query.replace("$stop_id", gtfs_id))
+        LOGGER.debug(results)
         return results
 
     async def get_stop_data(self, gtfs_id):

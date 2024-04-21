@@ -5,16 +5,25 @@
                 "description": "You'll need a Digitransit API key to get started, get one from https://digitransit.fi",
                 "data": {
                     "digitransit_api_key": "Digitransit API key",
-                    "stop_code": "Stop code"
+                    "search_type": "Find a stop",
+                    "search_term": "Stop code"
                 }
             }
         },
         "error": {
             "auth": "API key seems wrong.",
             "no_stop_found": "Stop not found. Check that you're giving the stop code, such as H0236.",
-            "too_many_stops": "Multiple possible stops identified. Please give the stop code, such as H0236.",
+            "too_many_stops": "Multiple possible stops identified. If possible, please search using the stop code, such as H0236.",
             "connection": "Unable to connect to the server.",
             "unknown": "Unknown error occurred."
+        }
+    },
+    "selector": {
+        "search_types": {
+            "options": {
+                "stop_code": "by stop code (e.g. H0086)",
+                "stop_gtfs_id": "by GTFS ID (e.g. HSL:1392551)"
+            }
         }
     }
 }
