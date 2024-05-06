@@ -43,8 +43,11 @@ class DigitransitSensor(DigitransitEntity, SensorEntity):
     @property
     def native_value(self) -> str:
         """Return the native value of the sensor."""
-        nextDeparture = self.coordinator.data.get("data").get("stop").get("stoptimesWithoutPatterns")[0]
-        return departureToNumberOfMinutes(nextDeparture)
+        departures = self.coordinator.data.get("data").get("stop").get("stoptimesWithoutPatterns")
+        if(len(departures) > 0):
+            return departureToNumberOfMinutes(departures[0])
+        else:
+            return None
 
     @property
     def native_unit_of_measurement(self):
