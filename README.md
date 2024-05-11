@@ -2,9 +2,6 @@ This is a custom component for Home Assistant, which adds a single stop (bus
 or tram stop, train or metro platform) from Helsinki Region Transport
 (Helsingin seudun liikenne, HSL) as a Home Assistant sensor.
 
-Currently rail stations do not work reliably - follow [issue 33](https://github.com/Mallonbacka/custom-component-digitransit/issues/33)
-for updates.
-
 You can add a stop using either:
 
 - The stop number, which you can find on a sign at the
