@@ -23,7 +23,7 @@ class DigitransitGraphQLWrapper:
         """Create a new instance with an API key."""
         self.api_key = api_key
         self.hass = hass
-        self.client = GraphqlClient(endpoint=f"https://api.digitransit.fi/routing/v1/routers/finland/index/graphql?digitransit-subscription-key={self.api_key}")
+        self.client = GraphqlClient(endpoint=f"https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql?digitransit-subscription-key={self.api_key}")
 
     def sync_test_api_key(self):
         """Try to list feeds to see if the API key works."""
@@ -80,7 +80,6 @@ class DigitransitGraphQLWrapper:
         """Get stop times from a saved GTFS id."""
         query = """{ stop(id: "$stop_id") { name, stoptimesWithoutPatterns { scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign, trip { routeShortName } } } }"""
         results = self.client.execute(query=query.replace("$stop_id", gtfs_id))
-        LOGGER.debug(results)
         return results
 
     async def get_stop_data(self, gtfs_id):
