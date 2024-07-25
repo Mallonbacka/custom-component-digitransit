@@ -32,6 +32,7 @@ class DigitransitGraphQLWrapper:
         self.client = GraphqlClient(endpoint=self.endpoint())
 
     def endpoint(self):
+        """Get the right endpoint for the selected region, with the API key ready-appended."""
         match self.data_region:
             case "hsl":
                 return f"https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql?digitransit-subscription-key={self.api_key}"
