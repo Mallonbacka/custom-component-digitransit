@@ -24,7 +24,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = coordinator = DigitransitDataUpdateCoordinator(
         hass=hass,
-        client=DigitransitGraphQLWrapper(entry.data['digitransit_api_key'], hass),
+        client=DigitransitGraphQLWrapper(
+            # Versions 0.2.2 and earlier supported only HSL, so if the region is not set, assume it is HSL
+            entry.data['digitransit_api_key'], entry.data.get('data_region', "hsl"), hass),
     )
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await coordinator.async_config_entry_first_refresh()

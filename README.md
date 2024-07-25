@@ -1,13 +1,15 @@
 This is a custom component for Home Assistant, which adds a single stop (bus
 or tram stop, train or metro platform) from Helsinki Region Transport
-(Helsingin seudun liikenne, HSL) as a Home Assistant sensor.
+(Helsingin seudun liikenne, HSL, Helsingforsregionens trafik, HRT) as a
+Home Assistant sensor.
 
 You can add a stop using either:
 
 - The stop number, which you can find on a sign at the
 stop or from the journey planner (reittiopas). For example, for trams from
 Länsiterminaali T1 going towards central Helsinki, you'd use H0236. For
-platform 1 at Tapiola bus station, you'd use E2187.
+platform 1 at Tapiola bus station, you'd use E2187. At present this doesn't
+work for non-HSL regions.
 - The GTFS identifier of the stop. This is useful if two stops
 share a single stop number. You can find this URL encoded inside the address
 of the journey planner page for the stop. For example, Alberganesplanadi
@@ -21,9 +23,7 @@ on [the Digitransit website](https://digitransit.fi/en/developers/api-registrati
 ## Pre-release warning
 
 The basic functionality works, but this isn't yet ready for wider use, so
-use this at your own risk. One key limitation at present is that some
-HSL-specific arguments are hard-coded, whereas the API supports all
-Digitransit-supported areas of Finland.
+use this at your own risk.
 
 Another limitation is that stations are not currently supported, only
 stops. This means you can't monitor all departures from a station

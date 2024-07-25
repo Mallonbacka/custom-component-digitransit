@@ -5,6 +5,7 @@
                 "description": "You'll need a Digitransit API key to get started, get one from https://digitransit.fi",
                 "data": {
                     "digitransit_api_key": "Digitransit API key",
+                    "data_region": "Transport provider",
                     "search_type": "Find a stop",
                     "search_term": "Stop code"
                 }
@@ -21,8 +22,15 @@
     "selector": {
         "search_types": {
             "options": {
-                "stop_code": "by stop code (e.g. H0086)",
-                "stop_gtfs_id": "by GTFS ID (e.g. HSL:1392551)"
+                "stop_code": "by stop code (e.g. H0086, only supported by HSL at present)",
+                "stop_gtfs_id": "by GTFS ID (e.g. HSL:1392551 or tampere:0812)"
+            }
+        },
+        "data_regions": {
+            "options": {
+                "hsl": "HSL",
+                "waltti": "Waltti",
+                "digitransit": "Other (via Finland-wide Digitransit API)"
             }
         }
     }
