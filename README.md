@@ -1,7 +1,7 @@
 This is a custom component for Home Assistant, which adds a single stop (bus
 or tram stop, train or metro platform) from Helsinki Region Transport
-(Helsingin seudun liikenne, HSL, Helsingforsregionens trafik, HRT) as a
-Home Assistant sensor.
+(Helsingin seudun liikenne, HSL, Helsingforsregionens trafik, HRT),
+Waltti or another Digitransit-supported region as a Home Assistant sensor.
 
 You can add a stop using either:
 
