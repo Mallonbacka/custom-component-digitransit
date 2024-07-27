@@ -18,7 +18,7 @@ from .graphql_wrapper import (
 class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Blueprint."""
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(
         self,
