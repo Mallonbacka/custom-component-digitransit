@@ -10,7 +10,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
 from .graphql_wrapper import DigitransitGraphQLWrapper
-from .const import DOMAIN
+from .const import DOMAIN, LOGGER
 from .coordinator import DigitransitDataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [
@@ -25,8 +25,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = coordinator = DigitransitDataUpdateCoordinator(
         hass=hass,
         client=DigitransitGraphQLWrapper(
-            # Versions 0.2.2 and earlier supported only HSL, so if the region is not set, assume it is HSL
-            entry.data['digitransit_api_key'], entry.data.get('data_region', "hsl"), hass),
+            entry.data['digitransit_api_key'], entry.data['data_region'], hass),
     )
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await coordinator.async_config_entry_first_refresh()
@@ -48,3 +47,25 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
+
+
+async def async_migrate_entry(hass, entry):
+    """Migrate config to latest version."""
+    LOGGER.debug("Migrating configuration from version %s",
+                 entry.version)
+
+    if entry.version > 1:
+        return False
+
+    if entry.version == 1:
+        new_data = {**entry.data}
+        new_data['data_region'] = entry.data.get('data_region', "hsl")
+        pass
+
+    hass.config_entries.async_update_entry(
+        entry, data=new_data, version=2)
+
+    LOGGER.debug(
+        "Migration to configuration version %s successful", entry.version)
+
+    return True
