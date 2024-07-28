@@ -8,8 +8,8 @@ You can add a stop using either:
 - The stop number, which you can find on a sign at the
 stop or from the journey planner (reittiopas). For example, for trams from
 Länsiterminaali T1 going towards central Helsinki, you'd use H0236. For
-platform 1 at Tapiola bus station, you'd use E2187. At present this doesn't
-work for non-HSL regions.
+platform 1 at Tapiola bus station, you'd use E2187. This won't work if
+two stops have the same code.
 - The GTFS identifier of the stop. This is useful if two stops
 share a single stop number. You can find this URL encoded inside the address
 of the journey planner page for the stop. For example, Alberganesplanadi
