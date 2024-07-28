@@ -1,5 +1,6 @@
 """Adds config flow for Digitransit."""
 from __future__ import annotations
+from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -20,6 +21,8 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 2
 
+    data: dict[str, Any] | None
+
     async def async_step_user(
         self,
         user_input: dict | None = None,
@@ -30,22 +33,13 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 await self._test_api_key(
                     digitransit_api_key=user_input["digitransit_api_key"],
-                    data_region=user_input["data_region"],
                 )
             except DigitransitNotAuthenticatedError:
                 _errors["base"] = "auth"
             else:
-                try:
-                    stop_name, api_id = await self.identfiy_stop(user_input['search_type'], user_input['search_term'])
-                except DigitransitNoStopFoundError:
-                    _errors["base"] = "no_stop_found"
-                except DigitransitMultipleStopsFoundError:
-                    _errors["base"] = "too_many_stops"
-                else:
-                    return self.async_create_entry(
-                        title=stop_name,
-                        data=user_input | {"gtfs_id": api_id},
-                    )
+                self.data = {
+                    "digitransit_api_key": user_input["digitransit_api_key"]}
+                return await self.async_step_stop_info()
 
         return self.async_show_form(
             step_id="user",
@@ -56,6 +50,34 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             type=selector.TextSelectorType.TEXT
                         ),
                     ),
+                }
+            ),
+            errors=_errors,
+        )
+
+    async def async_step_stop_info(
+        self,
+        user_input: dict | None = None,
+    ) -> config_entries.FlowResult:
+        """Step 2 - once API key is confirmed working."""
+        _errors = {}
+        if user_input is not None:
+            try:
+                stop_name, api_id = await self.identify_stop(user_input['search_type'], user_input['search_term'])
+            except DigitransitNoStopFoundError:
+                _errors["base"] = "no_stop_found"
+            except DigitransitMultipleStopsFoundError:
+                _errors["base"] = "too_many_stops"
+            else:
+                return self.async_create_entry(
+                    title=stop_name,
+                    data=self.data | user_input | {"gtfs_id": api_id},
+                )
+
+        return self.async_show_form(
+            step_id="stop_info",
+            data_schema=vol.Schema(
+                {
                     vol.Required("data_region", default=(user_input or {}).get("data_region")): selector.SelectSelector(
                         selector.SelectSelectorConfig(
                             options=["hsl", "waltti", "digitransit"],
@@ -78,7 +100,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=_errors,
         )
 
-    async def identfiy_stop(self, search_type, search_term):
+    async def identify_stop(self, search_type, search_term):
         """Take the search criteria and return a stop name and code."""
         if (search_type == "stop_code"):
             return await self._get_stop_name_and_id_by_code(search_term)
@@ -87,10 +109,10 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         else:
             raise DigitransitNoStopFoundError
 
-    async def _test_api_key(self, digitransit_api_key: str, data_region: str) -> None:
+    async def _test_api_key(self, digitransit_api_key: str) -> None:
         """Validate credentials."""
         self.client = DigitransitGraphQLWrapper(
-            digitransit_api_key, data_region, hass=self.hass)
+            digitransit_api_key, "hsl", hass=self.hass)
         await self.client.test_api_key()
 
     async def _get_stop_name_and_id_by_code(self, stop_code: str) -> str:
