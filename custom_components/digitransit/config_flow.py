@@ -1,6 +1,6 @@
 """Adds config flow for Digitransit."""
 from __future__ import annotations
-from typing import Any, Dict, Optional
+from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -21,7 +21,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 2
 
-    data: Optional[Dict[str, Any]]
+    data: dict[str, Any] | None
 
     async def async_step_user(
         self,
