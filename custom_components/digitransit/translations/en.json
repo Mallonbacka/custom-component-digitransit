@@ -14,7 +14,7 @@
         "error": {
             "auth": "API key seems wrong.",
             "no_stop_found": "Stop not found. Check that you're giving the stop code, such as H0236.",
-            "too_many_stops": "Multiple possible stops identified. If possible, please search using the stop code, such as H0236.",
+            "too_many_stops": "Multiple stops with the same code found. Try using the GTFS ID instead. You can find this from the journey planner URL.",
             "connection": "Unable to connect to the server.",
             "unknown": "Unknown error occurred."
         }
@@ -22,7 +22,7 @@
     "selector": {
         "search_types": {
             "options": {
-                "stop_code": "by stop code (e.g. H0086, only supported by HSL at present)",
+                "stop_code": "by stop code (e.g. H0086)",
                 "stop_gtfs_id": "by GTFS ID (e.g. HSL:1392551 or tampere:0812)"
             }
         },
