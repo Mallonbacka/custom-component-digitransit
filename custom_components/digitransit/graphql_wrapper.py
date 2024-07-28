@@ -58,7 +58,7 @@ class DigitransitGraphQLWrapper:
 
     def sync_get_stop_name_and_id_by_code(self, stop_code):
         """Find a stop name and ID from a stop code or name."""
-        query = """query stopQuery($stop_code: String) { stops(name: $stop_code, feeds: ["HSL"], maxResults: 2){name,desc,code,platformCode,gtfsId}}"""
+        query = """query stopQuery($stop_code: String) { stops(name: $stop_code, maxResults: 2){name,desc,code,platformCode,gtfsId}}"""
         variables = {"stop_code": stop_code}
         results = self.client.execute(query=query, variables=variables)
         if (len(results['data']['stops']) == 0):
@@ -78,7 +78,8 @@ class DigitransitGraphQLWrapper:
 
     def sync_get_stop_name_and_id_by_gtfs(self, gtfs_id):
         """Find a stop name and ID from a GTFS id."""
-        query = f"""{{ stop(id: "{gtfs_id}"){{name,code,platformCode,gtfsId}}}}"""
+        query = f"""{{ stop(id: "{gtfs_id}
+                            "){{name,code,platformCode,gtfsId}}}}"""
         results = self.client.execute(query=query)
         if (len(results['data']['stop']) == {}):
             # No results
