@@ -4,7 +4,12 @@
             "user": {
                 "description": "You'll need a Digitransit API key to get started, get one from https://digitransit.fi",
                 "data": {
-                    "digitransit_api_key": "Digitransit API key",
+                    "digitransit_api_key": "Digitransit API key"
+                }
+            },
+            "stop_info": {
+                "description": "Give the details of the stop you'd like to monitor.",
+                "data": {
                     "data_region": "Transport provider",
                     "search_type": "Find a stop",
                     "search_term": "Stop code"
