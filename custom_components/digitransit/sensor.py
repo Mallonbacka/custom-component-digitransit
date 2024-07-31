@@ -43,8 +43,9 @@ class DigitransitSensor(DigitransitEntity, SensorEntity):
     @property
     def native_value(self) -> str:
         """Return the native value of the sensor."""
-        departures = self.coordinator.data.get("data").get("stop").get("stoptimesWithoutPatterns")
-        if(len(departures) > 0):
+        departures = self.coordinator.data.get("data").get(
+            "stop").get("stoptimesWithoutPatterns")
+        if (len(departures) > 0):
             return departureToNumberOfMinutes(departures[0])
         else:
             return None
@@ -57,14 +58,29 @@ class DigitransitSensor(DigitransitEntity, SensorEntity):
     @property
     def extra_state_attributes(self):
         """Attributes contain a list of the next few departures."""
-        departure_list = self.coordinator.data.get("data").get("stop").get("stoptimesWithoutPatterns")
+        departure_list = self.coordinator.data.get(
+            "data").get("stop").get("stoptimesWithoutPatterns")
         departure_list = list(map(formatDepartureRow, departure_list))
-        return { "departures": departure_list }
+        return {"departures": departure_list}
 
     @property
     def icon(self):
-        """Icon is always a bus."""
-        return "mdi:bus"
+        """Icon reflects the transport mode, but falls back to a bus."""
+        vehicle_mode = self.coordinator.data.get(
+            "data").get("stop").get("vehicleMode")
+        match vehicle_mode.lower():
+            case "bus":
+                return "mdi:bus"
+            case "ferry":
+                return "mdi:ferry"
+            case "rail":
+                return "mdi:train-variant"
+            case "subway":
+                return "mdi:subway"
+            case "tram":
+                return "mdi:tram"
+            case _:
+                return "mdi:bus"
 
     @property
     def name(self):
