@@ -95,7 +95,7 @@ class DigitransitGraphQLWrapper:
 
     def sync_get_stop_data(self, gtfs_id):
         """Get stop times from a saved GTFS id."""
-        query = """{ stop(id: "$stop_id") { name, stoptimesWithoutPatterns { scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign, trip { routeShortName } } } }"""
+        query = """{ stop(id: "$stop_id") { name, vehicleMode, stoptimesWithoutPatterns { scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign, trip { routeShortName } } } }"""
         results = self.client.execute(query=query.replace("$stop_id", gtfs_id))
         return results
 
