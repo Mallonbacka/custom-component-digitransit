@@ -63,7 +63,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         _errors = {}
         if user_input is not None:
             try:
-                stop_name, api_id = await self.identify_stop(user_input['search_type'], user_input['search_term'])
+                stop_name, api_id = await self.identify_stop(user_input['search_type'], user_input['search_term'], user_input['data_region'])
             except DigitransitNoStopFoundError:
                 _errors["base"] = "no_stop_found"
             except DigitransitMultipleStopsFoundError:
@@ -100,8 +100,9 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=_errors,
         )
 
-    async def identify_stop(self, search_type, search_term):
+    async def identify_stop(self, search_type, search_term, data_region):
         """Take the search criteria and return a stop name and code."""
+        self.data_region = data_region
         if (search_type == "stop_code"):
             return await self._get_stop_name_and_id_by_code(search_term)
         elif (search_type == "stop_gtfs_id"):
@@ -111,14 +112,20 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _test_api_key(self, digitransit_api_key: str) -> None:
         """Validate credentials."""
-        self.client = DigitransitGraphQLWrapper(
-            digitransit_api_key, "hsl", hass=self.hass)
-        await self.client.test_api_key()
+        self.api_key = digitransit_api_key
+        # Single-use client, as the user hasn't chosen a region yet
+        client = DigitransitGraphQLWrapper(
+            self.api_key, "hsl", hass=self.hass)
+        await client.test_api_key()
 
     async def _get_stop_name_and_id_by_code(self, stop_code: str) -> str:
         """Get the official stop name for the code."""
-        return await self.client.get_stop_name_and_id_by_code(stop_code)
+        client = DigitransitGraphQLWrapper(
+            self.api_key, self.data_region, hass=self.hass)
+        return await client.get_stop_name_and_id_by_code(stop_code)
 
     async def _get_stop_name_and_id_by_gtfs(self, gtfs_id: str) -> str:
         """Get the official stop name for the code."""
-        return await self.client.get_stop_name_and_id_by_gtfs(gtfs_id)
+        client = DigitransitGraphQLWrapper(
+            self.api_key, self.data_region, hass=self.hass)
+        return await client.get_stop_name_and_id_by_gtfs(gtfs_id)
