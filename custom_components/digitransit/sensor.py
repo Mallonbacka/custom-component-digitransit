@@ -75,6 +75,8 @@ class DigitransitSensor(DigitransitEntity, SensorEntity):
     @property
     def icon(self):
         """Icon reflects the transport mode, but falls back to a bus."""
+        if self.coordinator.data is None:
+            return "mdi:bus"
         vehicle_mode = self.coordinator.data.get("data").get("stop").get("vehicleMode")
         match vehicle_mode.lower():
             case "bus":
