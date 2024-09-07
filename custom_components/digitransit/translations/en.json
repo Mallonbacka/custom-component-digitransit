@@ -24,6 +24,28 @@
             "unknown": "Unknown error occurred."
         }
     },
+    "issues": {
+        "api_key_rejected": {
+            "title": "Digitransit API key was rejected",
+            "fix_flow": {
+                "flow_title": "Replace API Key",
+                "step": {
+                    "init": {
+                        "title": "Replace API Key",
+                        "description": "Your Digitransit API key was rejected. This might be because it was regenerated or deleted. To continue to get updates, please provide a new Digitransit API key.",
+                        "data": {
+                            "digitransit_api_key": "Digitransit API key"
+                        }
+                    }
+                },
+                "error": {
+                    "auth": "API key seems wrong.",
+                    "connection": "Unable to connect to the server.",
+                    "unknown": "Unknown error occurred."
+                }
+            }
+        }
+    },
     "selector": {
         "search_types": {
             "options": {
