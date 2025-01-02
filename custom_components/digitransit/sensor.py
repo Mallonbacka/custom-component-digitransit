@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.const import UnitOfTime
-
+from zoneinfo import ZoneInfo
 from .const import DOMAIN
 from .coordinator import DigitransitDataUpdateCoordinator
 from .entity import DigitransitEntity
@@ -64,12 +64,13 @@ class DigitransitSensor(DigitransitEntity, SensorEntity):
     @property
     def extra_state_attributes(self):
         """Attributes contain a list of the next few departures."""
+        timezone = ZoneInfo(self.hass.config.time_zone)
         departure_list = (
             self.coordinator.data.get("data")
             .get("stop")
             .get("stoptimesWithoutPatterns")
         )
-        departure_list = list(map(formatDepartureRow, departure_list))
+        departure_list = [formatDepartureRow(row, timezone) for row in departure_list]
         return {"departures": departure_list}
 
     @property
