@@ -36,11 +36,11 @@ class DigitransitGraphQLWrapper:
         """Get the right endpoint for the selected region, with the API key ready-appended."""
         match self.data_region:
             case "hsl":
-                return f"https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql?digitransit-subscription-key={self.api_key}"
+                return f"https://api.digitransit.fi/routing/v2/hsl/gtfs/v1?digitransit-subscription-key={self.api_key}"
             case "waltti":
-                return f"https://api.digitransit.fi/routing/v1/routers/waltti/index/graphql?digitransit-subscription-key={self.api_key}"
+                return f"https://api.digitransit.fi/routing/v2/waltti/gtfs/v1?digitransit-subscription-key={self.api_key}"
             case "digitransit":
-                return f"https://api.digitransit.fi/routing/v1/routers/finland/index/graphql?digitransit-subscription-key={self.api_key}"
+                return f"https://api.digitransit.fi/routing/v2/finland/gtfs/v1?digitransit-subscription-key={self.api_key}"
 
     def sync_test_api_key(self):
         """Try to list feeds to see if the API key works."""
@@ -81,8 +81,8 @@ class DigitransitGraphQLWrapper:
 
     def sync_get_stop_name_and_id_by_gtfs(self, gtfs_id):
         """Find a stop name and ID from a GTFS id."""
-        query = f"""{{ stop(id: "{gtfs_id}
-                            "){{name,code,platformCode,gtfsId}}}}"""
+        query = f"""{{ stop(id: "{gtfs_id}"){{name,code,platformCode,gtfsId}}}}"""
+        LOGGER.debug(query)
         results = self.client.execute(query=query)
         if len(results["data"]["stop"]) == {}:
             # No results
