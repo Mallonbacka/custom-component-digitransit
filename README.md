@@ -3,19 +3,9 @@ or tram stop, train or metro platform) from Helsinki Region Transport
 (Helsingin seudun liikenne, HSL, Helsingforsregionens trafik, HRT),
 Waltti or another Digitransit-supported region as a Home Assistant sensor.
 
-You can add a stop using either:
-
-- The stop number, which you can find on a sign at the
-stop or from the journey planner (reittiopas). For example, for trams from
-Länsiterminaali T1 going towards central Helsinki, you'd use H0236. For
-platform 1 at Tapiola bus station, you'd use E2187. This won't work if
-two stops have the same code.
-- The GTFS identifier of the stop. This is useful if two stops
-share a single stop number. You can find this URL encoded inside the address
-of the journey planner page for the stop. For example, Alberganesplanadi
-([E1112](https://reittiopas.hsl.fi/pysakit/HSL%3A2112231?locale=en))
-has the address `pysakit/HSL%3A2112231`, and the GTFS identifier `HSL:2112231` -
-swap the `%3A` for a colon.
+Search for a stop using the name or stop code. Search results will include extra
+details, like the stop code or platform number, which should allow you to tell
+them apart if there are several results.
 
 You'll also need a Digitransit API key. You can sign up for one for free
 on [the Digitransit website](https://digitransit.fi/en/developers/api-registration/).

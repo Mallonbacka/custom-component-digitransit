@@ -4,22 +4,27 @@
             "user": {
                 "description": "You'll need a Digitransit API key to get started, get one from https://digitransit.fi",
                 "data": {
-                    "digitransit_api_key": "Digitransit API key"
+                    "digitransit_api_key": "Digitransit API key",
+                    "data_region": "Transport data provider"
                 }
             },
             "stop_info": {
-                "description": "Give the details of the stop you'd like to monitor.",
+                "description": "Search for a stop using the name or code.",
                 "data": {
-                    "data_region": "Transport provider",
-                    "search_type": "Find a stop",
-                    "search_term": "Stop code"
+                    "feed_id": "Region",
+                    "search_term": "Stop name or code"
+                }
+            },
+            "select_stop": {
+                "description": "Choose a stop from the list.",
+                "data": {
+                    "stop_gtfs_id": "Stop to monitor"
                 }
             }
         },
         "error": {
             "auth": "API key seems wrong.",
-            "no_stop_found": "Stop not found. Check that you're giving the stop code, such as H0236.",
-            "too_many_stops": "Multiple stops with the same code found. Try using the GTFS ID instead. You can find this from the journey planner URL.",
+            "no_stop_found": "Stop not found. Check your search term, and for best results, search using the stop code, such as H0236.",
             "connection": "Unable to connect to the server.",
             "unknown": "Unknown error occurred."
         }
@@ -47,12 +52,6 @@
         }
     },
     "selector": {
-        "search_types": {
-            "options": {
-                "stop_code": "by stop code (e.g. H0086)",
-                "stop_gtfs_id": "by GTFS ID (e.g. HSL:1392551 or tampere:0812)"
-            }
-        },
         "data_regions": {
             "options": {
                 "hsl": "HSL",
