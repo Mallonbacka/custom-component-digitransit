@@ -46,6 +46,7 @@ class DigitransitGraphQLWrapper:
         """Try to list feeds to see if the API key works."""
         query = "{feeds{feedId}}"
         try:
+            LOGGER.info(query)
             self.client.execute(query=query)
         except requests.exceptions.HTTPError as exception:
             LOGGER.warn(exception)
@@ -59,9 +60,11 @@ class DigitransitGraphQLWrapper:
 
     def sync_get_stop_name_and_id_by_code(self, stop_code):
         """Find a stop name and ID from a stop code or name."""
-        query = """query stopQuery($stop_code: String) { stops(name: $stop_code, maxResults: 2){name,desc,code,platformCode,gtfsId}}"""
+        query = """query stopQuery($stop_code: String) { stops(name: $stop_code){name,desc,code,platformCode,gtfsId}}"""
         variables = {"stop_code": stop_code}
+        LOGGER.debug(query)
         results = self.client.execute(query=query, variables=variables)
+        LOGGER.debug(results)
         if len(results["data"]["stops"]) == 0:
             # No results
             raise DigitransitNoStopFoundError
@@ -84,6 +87,7 @@ class DigitransitGraphQLWrapper:
         query = f"""{{ stop(id: "{gtfs_id}"){{name,code,platformCode,gtfsId}}}}"""
         LOGGER.debug(query)
         results = self.client.execute(query=query)
+        LOGGER.debug(results)
         if len(results["data"]["stop"]) == {}:
             # No results
             raise DigitransitNoStopFoundError
