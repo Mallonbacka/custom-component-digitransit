@@ -32,7 +32,7 @@ class DigitransitGraphQLWrapper:
         self.data_region = data_region
         self.client = GraphqlClient(endpoint=self.endpoint())
 
-    def endpoint(self):
+    def endpoint(self) -> str:
         """Get the right endpoint for the selected region, with the API key ready-appended."""
         match self.data_region:
             case "hsl":
@@ -41,11 +41,13 @@ class DigitransitGraphQLWrapper:
                 return f"https://api.digitransit.fi/routing/v2/waltti/gtfs/v1?digitransit-subscription-key={self.api_key}"
             case "digitransit":
                 return f"https://api.digitransit.fi/routing/v2/finland/gtfs/v1?digitransit-subscription-key={self.api_key}"
+        raise Exception("Invalid data_region")
 
     def sync_test_api_key(self):
         """Try to list feeds to see if the API key works."""
         query = "{feeds{feedId}}"
         try:
+            LOGGER.info(query)
             self.client.execute(query=query)
         except requests.exceptions.HTTPError as exception:
             LOGGER.warn(exception)
@@ -57,11 +59,26 @@ class DigitransitGraphQLWrapper:
         """Call sync_test_api_key async."""
         return await self.hass.async_add_executor_job(self.sync_test_api_key)
 
+    def sync_all_feeds(self):
+        """Get a list of regions and the name of the respectie publisher."""
+        query = "{feeds{feedId,publisher{name}}}"
+        results = self.client.execute(query=query)
+        return {
+            feed["feedId"]: feed["publisher"]["name"]
+            for feed in results["data"]["feeds"]
+        }
+
+    async def all_feeds(self):
+        """Call sync_all_feeds async."""
+        return await self.hass.async_add_executor_job(self.sync_all_feeds)
+
     def sync_get_stop_name_and_id_by_code(self, stop_code):
         """Find a stop name and ID from a stop code or name."""
-        query = """query stopQuery($stop_code: String) { stops(name: $stop_code, maxResults: 2){name,desc,code,platformCode,gtfsId}}"""
+        query = """query stopQuery($stop_code: String) { stops(name: $stop_code){name,desc,code,platformCode,gtfsId}}"""
         variables = {"stop_code": stop_code}
+        LOGGER.debug(query)
         results = self.client.execute(query=query, variables=variables)
+        LOGGER.debug(results)
         if len(results["data"]["stops"]) == 0:
             # No results
             raise DigitransitNoStopFoundError
@@ -84,13 +101,17 @@ class DigitransitGraphQLWrapper:
         query = f"""{{ stop(id: "{gtfs_id}"){{name,code,platformCode,gtfsId}}}}"""
         LOGGER.debug(query)
         results = self.client.execute(query=query)
+        LOGGER.debug(results)
         if len(results["data"]["stop"]) == {}:
             # No results
             raise DigitransitNoStopFoundError
         else:
             # Good to go
             stop = results["data"]["stop"]
-            return stop["name"] + " (" + stop["code"] + ")", stop["gtfsId"]
+            output = [stop["name"]]
+            if stop["code"]:
+                output.append("(" + stop["code"] + ")")
+            return " ".join(output), stop["gtfsId"]
 
     async def get_stop_name_and_id_by_gtfs(self, gtfs_id):
         """Call sync_get_stop_name_and_id async."""
