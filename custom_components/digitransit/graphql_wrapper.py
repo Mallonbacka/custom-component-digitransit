@@ -43,30 +43,19 @@ class DigitransitGraphQLWrapper:
                 return f"https://api.digitransit.fi/routing/v2/finland/gtfs/v1?digitransit-subscription-key={self.api_key}"
         raise Exception("Invalid data_region")
 
-    def sync_test_api_key(self):
-        """Try to list feeds to see if the API key works."""
-        query = "{feeds{feedId}}"
+    def sync_all_feeds(self):
+        """Get a list of regions and the name of the respectie publisher."""
+        query = "{feeds{feedId,publisher{name}}}"
         try:
-            LOGGER.info(query)
-            self.client.execute(query=query)
+            results = self.client.execute(query=query)
         except requests.exceptions.HTTPError as exception:
             LOGGER.warn(exception)
             raise DigitransitNotAuthenticatedError("API key rejected")
         else:
-            return True
-
-    async def test_api_key(self):
-        """Call sync_test_api_key async."""
-        return await self.hass.async_add_executor_job(self.sync_test_api_key)
-
-    def sync_all_feeds(self):
-        """Get a list of regions and the name of the respectie publisher."""
-        query = "{feeds{feedId,publisher{name}}}"
-        results = self.client.execute(query=query)
-        return {
-            feed["feedId"]: feed["publisher"]["name"]
-            for feed in results["data"]["feeds"]
-        }
+            return {
+                feed["feedId"]: feed["publisher"]["name"]
+                for feed in results["data"]["feeds"]
+            }
 
     async def all_feeds(self):
         """Call sync_all_feeds async."""

@@ -31,8 +31,8 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         _errors = {}
         if user_input is not None:
             try:
-                await self._test_api_key(
-                    digitransit_api_key=user_input["digitransit_api_key"],
+                all_feeds = await self.all_feeds(
+                    user_input["digitransit_api_key"], user_input["data_region"]
                 )
             except DigitransitNotAuthenticatedError:
                 _errors["base"] = "auth"
@@ -40,6 +40,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 self.data = {
                     "digitransit_api_key": user_input["digitransit_api_key"],
                     "data_region": user_input["data_region"],
+                    "all_feeds": all_feeds,
                 }
                 return await self.async_step_stop_info()
 
@@ -91,9 +92,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self.async_step_select_stop(None)
 
         assert self.data
-        self.data["all_feeds"] = await self.all_feeds(
-            self.data["digitransit_api_key"], self.data["data_region"]
-        )
+
         select_options = [
             selector.SelectOptionDict(label=label, value=feed_id)
             for feed_id, label in self.data["all_feeds"].items()
@@ -164,13 +163,6 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self.data_region = data_region
         self.feed_id = feed_id
         return await self._search_for_stop(search_term)
-
-    async def _test_api_key(self, digitransit_api_key: str) -> None:
-        """Validate credentials."""
-        self.api_key = digitransit_api_key
-        # Single-use client, as the user hasn't chosen a region yet
-        client = DigitransitGraphQLWrapper(self.api_key, "hsl", hass=self.hass)
-        await client.test_api_key()
 
     async def all_feeds(self, digitransit_api_key: str, data_region: str) -> dict:
         """Get all regions."""
