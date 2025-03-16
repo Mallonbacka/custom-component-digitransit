@@ -39,13 +39,58 @@ Then add a new integraion:
 1. Go to **Settings**, then **Devices & Services**
 1. Click **Add Integration**
 1. Select 'Digitransit' from the list
-1. Enter your API key and stop number.
+1. Enter your API key and follow the instructions to find your local stop.
 
 ## Usage
 
 The sensor counts down to the next uncancelled departure. The attributes
 provide a list of upcoming departures with their service name and departure
 time in a machine-friendly format.
+
+### Cards
+
+#### Entity Card
+
+Adding the sensor to an "Entity Card" shows the name, icon and number of minutes to the next departure (on any line):
+
+![Screenshot of a dashboard card with the heading "Pasila (H0089) next departure", an icon that looks like a train and the value 26 minutes](docs/entity_screenshot.png)
+
+```yaml
+type: entity
+entity: sensor.honkasuontie_h1792_next_departure
+state_color: false
+```
+
+#### Markdown card
+
+If you want to show the lines, and see several upcoming departures, this can be acheived with a markdown card:
+
+![Screenshot of a dashboard card containing a table with columns for arrival, in, line and destination, with five departures listed in the format 09:44, 2h 0m, R, Helsinki](docs/markdown_table_screenshot.png)
+
+```yaml
+type: markdown
+content: >-
+  | Arrival | in | Line | Destination |
+
+  | :------ | :---- | :--: | :------ |
+
+  {%- if not states('sensor.pasila_h0089_next_departure') == 'unknown' %}
+
+  {% for departure in state_attr('sensor.pasila_h0089_next_departure','departures')
+  %}
+
+  {%- set arrival_time = departure.realtimeDeparture %}  {{-
+  as_datetime(arrival_time).strftime("%H:%M") }} |  {%- set min_left =
+  ((as_timestamp(as_datetime(arrival_time).strftime("%Y-%m-%d %H:%M:%S")) -
+  as_timestamp(now()))/60) | round(0) %}  {%- if min_left <= 60
+  %}{{min_left}}min {% elif min_left > 60 %}{{(min_left / 60) | int}}h
+  {{(min_left % 60) }}m {%endif%} | {{- departure.route }} |  {{- departure.headsign}}
+  |
+
+  {% endfor %} {% endif %}
+```
+
+Thanks to [@samhaa](https://github.com/samhaa) for contributing the markdown example.
 
 ## Credits
 
