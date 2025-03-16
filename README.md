@@ -49,6 +49,8 @@ time in a machine-friendly format.
 
 ### Cards
 
+You can show the data on a dashboard using a card. To use the following examples, create a card using the "code editor" view to add a YAML definition, and swap `sensor.pasila_h0089_next_departure` to your own sensor ID.
+
 #### Entity Card
 
 Adding the sensor to an "Entity Card" shows the name, icon and number of minutes to the next departure (on any line):
@@ -57,7 +59,7 @@ Adding the sensor to an "Entity Card" shows the name, icon and number of minutes
 
 ```yaml
 type: entity
-entity: sensor.honkasuontie_h1792_next_departure
+entity: sensor.pasila_h0089_next_departure
 state_color: false
 ```
 
