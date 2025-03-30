@@ -113,6 +113,7 @@ class DigitransitGraphQLWrapper:
         try:
             query = """{ stop(id: "$stop_id") { name, vehicleMode, stoptimesWithoutPatterns { scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign, trip { routeShortName } } } }"""
             results = self.client.execute(query=query.replace("$stop_id", gtfs_id))
+            LOGGER.debug(results)
             return results
         except requests.exceptions.HTTPError as exception:
             if exception.args[0].startswith("401"):
