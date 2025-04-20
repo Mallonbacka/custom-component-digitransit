@@ -8,9 +8,10 @@ SEARCH_ENDPOINT = "https://api.digitransit.fi/geocoding/v1/search"
 class GeocodingClient:
     """REST client for Digitransit Geocoding API."""
 
-    def __init__(self, api_key):
+    def __init__(self, api_key, search_lang):
         """Initialize a new client with an API key."""
         self.api_key = api_key
+        self.search_lang = search_lang
 
     def search(self, feed, search_string):
         """Search for the given string in the given feed."""
@@ -21,6 +22,9 @@ class GeocodingClient:
             "sources": "gtfs" + feed,
             "digitransit-subscription-key": self.api_key,
         }
+        if self.search_lang is not None:
+            params["lang"] = self.search_lang
+
         response = requests.get(SEARCH_ENDPOINT, params)
         return {
             self.trim_gtfs_id(feat["properties"]["id"]): self.format_label(
