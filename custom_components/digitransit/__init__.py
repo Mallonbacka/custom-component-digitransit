@@ -24,10 +24,11 @@ PLATFORMS: list[Platform] = [
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
     hass.data.setdefault(DOMAIN, {})
+    route_lang = entry.data.get("route_lang")
     hass.data[DOMAIN][entry.entry_id] = coordinator = DigitransitDataUpdateCoordinator(
         hass=hass,
         client=DigitransitGraphQLWrapper(
-            entry.data["digitransit_api_key"], entry.data["data_region"], hass
+            entry.data["digitransit_api_key"], entry.data["data_region"], route_lang, hass
         ),
     )
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities

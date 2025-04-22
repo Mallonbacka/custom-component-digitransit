@@ -5,7 +5,8 @@
                 "description": "You'll need a Digitransit API key to get started, get one from https://digitransit.fi",
                 "data": {
                     "digitransit_api_key": "Digitransit API key",
-                    "data_region": "Transport data provider"
+                    "data_region": "Transport data provider",
+                    "route_lang": "Language"
                 }
             },
             "stop_info": {
@@ -58,6 +59,13 @@
                 "waltti": "Waltti",
                 "digitransit": "Other (via Finland-wide Digitransit API)"
             }
-        }
+        },
+	"route_lang": {
+	    "options": {
+                "fi": "Finnish",
+                "sv": "Swedish",
+		"en": "English"
+            }
+	}
     }
 }

@@ -69,7 +69,7 @@ class ReplaceAPIKeyFlow(RepairsFlow):
         # TODO: DRY
         self.api_key = digitransit_api_key
         # Single-use client, as the user hasn't chosen a region yet
-        client = DigitransitGraphQLWrapper(self.api_key, "hsl", hass=self.hass)
+        client = DigitransitGraphQLWrapper(self.api_key, "hsl", None, hass=self.hass)
         await client.test_api_key()
 
 

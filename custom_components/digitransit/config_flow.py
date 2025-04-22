@@ -32,7 +32,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 all_feeds = await self.all_feeds(
-                    user_input["digitransit_api_key"], user_input["data_region"]
+                    user_input["digitransit_api_key"], user_input["data_region"], user_input["route_lang"],
                 )
             except DigitransitNotAuthenticatedError:
                 _errors["base"] = "auth"
@@ -40,6 +40,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 self.data = {
                     "digitransit_api_key": user_input["digitransit_api_key"],
                     "data_region": user_input["data_region"],
+                    "route_lang": user_input["route_lang"],
                     "all_feeds": all_feeds,
                 }
                 return await self.async_step_stop_info()
@@ -63,6 +64,13 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         selector.SelectSelectorConfig(
                             options=["hsl", "waltti", "digitransit"],
                             translation_key="data_regions",
+                        ),
+                    ),
+                    vol.Required("route_lang", default=(user_input or {}).get("route_lang", None),
+                    ): selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=["fi", "sv", "en"],
+                            translation_key="route_lang",
                         ),
                     ),
                 }
@@ -164,19 +172,21 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self.feed_id = feed_id
         return await self._search_for_stop(search_term)
 
-    async def all_feeds(self, digitransit_api_key: str, data_region: str) -> dict:
+    async def all_feeds(self, digitransit_api_key: str, data_region: str, route_lang: str) -> dict:
         """Get all regions."""
         self.api_key = digitransit_api_key
         self.data_region = data_region
+        self.route_lang = route_lang
         self.client = DigitransitGraphQLWrapper(
-            self.api_key, self.data_region, hass=self.hass
+            self.api_key, self.data_region, self.route_lang, hass=self.hass
         )
         return await self.client.all_feeds()
 
     async def _search_for_stop(self, search_term: str) -> dict:
         assert self.data
         assert self.data["digitransit_api_key"]
-        client = GeocodingClient(self.data["digitransit_api_key"])
+        assert self.data["route_lang"]
+        client = GeocodingClient(self.data["digitransit_api_key"], self.data["route_lang"])
         return await self.hass.async_add_executor_job(
             client.search, self.feed_id, search_term
         )
@@ -184,6 +194,6 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def _get_stop_name_and_id_by_gtfs(self, gtfs_id: str) -> str:
         """Get the official stop name for the code."""
         client = DigitransitGraphQLWrapper(
-            self.api_key, self.data_region, hass=self.hass
+            self.api_key, self.data_region, self.route_lang, hass=self.hass
         )
         return await client.get_stop_name_and_id_by_gtfs(gtfs_id)

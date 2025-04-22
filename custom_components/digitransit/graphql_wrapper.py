@@ -25,12 +25,16 @@ class DigitransitMultipleStopsFoundError(DigitransitGraphQLError):
 class DigitransitGraphQLWrapper:
     """An API client which wraps around a simple GraphQL client."""
 
-    def __init__(self, api_key, data_region, hass) -> None:
+    def __init__(self, api_key, data_region, route_lang, hass) -> None:
         """Create a new instance with an API key."""
         self.api_key = api_key
         self.hass = hass
         self.data_region = data_region
-        self.client = GraphqlClient(endpoint=self.endpoint())
+
+        route_lang = "*" if route_lang is None else route_lang
+        headers = { "Accept-Language": route_lang }
+
+        self.client = GraphqlClient(endpoint=self.endpoint(), headers=headers)
 
     def endpoint(self) -> str:
         """Get the right endpoint for the selected region, with the API key ready-appended."""
