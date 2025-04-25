@@ -36,7 +36,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class DigitransitSensor(DigitransitEntity, SensorEntity):
     """digitransit Sensor class."""
 
-    _unrecorded_attributes = frozenset({"departures"})
+    _unrecorded_attributes = frozenset({"departures", "compact_departures"})
 
     def __init__(
         self,
