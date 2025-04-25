@@ -8,7 +8,11 @@ from zoneinfo import ZoneInfo
 from .const import DOMAIN
 from .coordinator import DigitransitDataUpdateCoordinator
 from .entity import DigitransitEntity
-from .utils import formatDepartureRow, departureToNumberOfMinutes
+from .utils import (
+    formatDepartureRow,
+    departureToNumberOfMinutes,
+    list_to_compact_departures,
+)
 
 ENTITY_DESCRIPTIONS = (
     SensorEntityDescription(
@@ -71,7 +75,8 @@ class DigitransitSensor(DigitransitEntity, SensorEntity):
             .get("stoptimesWithoutPatterns")
         )
         departure_list = [formatDepartureRow(row, timezone) for row in departure_list]
-        return {"departures": departure_list}
+        compact_departures = list_to_compact_departures(departure_list)
+        return {"departures": departure_list, "compact_departures": compact_departures}
 
     @property
     def icon(self):
