@@ -3,10 +3,10 @@
 from datetime import datetime
 import math
 
-from .const import COMPACT_DEPARTURES_CHARS
+from .const import COMPACT_DEPARTURES_CHARS, SHORT_HEADSIGN_CHARS
 
 
-def formatDepartureRow(row, timezone):
+def format_departure_row(row, timezone):
     """Simplify the departure information for use in the attribute."""
     scheduledDepartureTimestamp = row["serviceDay"] + row["scheduledDeparture"]
     row["scheduledDeparture"] = datetime.fromtimestamp(
@@ -17,6 +17,7 @@ def formatDepartureRow(row, timezone):
         realtimeDepartureTimestamp, timezone
     )
     row["route"] = row.pop("trip")["routeShortName"]
+    row["shortHeadsign"] = short_headsign(row["headsign"])
     row.pop("serviceDay")
     return row
 
@@ -56,3 +57,11 @@ def departure_to_string(departure, hide_hours=False):
         tm_str = f"{departure["realtimeDeparture"].hour:02d}"
     tm_str = tm_str + ":" + f"{departure["realtimeDeparture"].minute:02d}"
     return f"{tm_str} {departure["route"]}"
+
+
+def short_headsign(full_headsign):
+    """To fit into small spaces, we limit the length of this."""
+    if len(full_headsign) > SHORT_HEADSIGN_CHARS:
+        if " " in full_headsign:
+            full_headsign = full_headsign.split(" ")[0]
+    return full_headsign

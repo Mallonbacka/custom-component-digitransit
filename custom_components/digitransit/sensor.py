@@ -9,7 +9,7 @@ from .const import DOMAIN
 from .coordinator import DigitransitDataUpdateCoordinator
 from .entity import DigitransitEntity
 from .utils import (
-    formatDepartureRow,
+    format_departure_row,
     departureToNumberOfMinutes,
     list_to_compact_departures,
 )
@@ -74,7 +74,7 @@ class DigitransitSensor(DigitransitEntity, SensorEntity):
             .get("stop")
             .get("stoptimesWithoutPatterns")
         )
-        departure_list = [formatDepartureRow(row, timezone) for row in departure_list]
+        departure_list = [format_departure_row(row, timezone) for row in departure_list]
         compact_departures = list_to_compact_departures(departure_list)
         return {"departures": departure_list, "compact_departures": compact_departures}
 
