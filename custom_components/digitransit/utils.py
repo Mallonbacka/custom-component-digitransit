@@ -36,7 +36,7 @@ def list_to_compact_departures(departures):
 
     prev_hour = departures[0]["realtimeDeparture"].hour
     sep = ", "
-    for departure in departures[: len(departures) - 1]:
+    for departure in departures[1 : len(departures) - 1]:
         curr_hour = departure["realtimeDeparture"].hour
         skip_hour = curr_hour == prev_hour
         next_route = departure_to_string(departure, skip_hour)
