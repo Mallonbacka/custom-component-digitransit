@@ -43,9 +43,19 @@ Then add a new integraion:
 
 ## Usage
 
-The sensor counts down to the next uncancelled departure. The attributes
-provide a list of upcoming departures with their service name and departure
-time in a machine-friendly format.
+The sensor counts down to the next uncancelled departure.
+
+The attributes are as follows:
+
+- `departures` - a list of upcoming departures from the given stop, each with the following details, mostly direct from the Digitransit API:
+  - `scheduledDeparture` - timezone-aware datetime string of the departure time according to the timetable.
+  - `realtimeDeparture` - timezone-aware datetime string of the departure time according to live information.
+  - `departureDelay` - the number of seconds late this service is running. Negative numbers indicate it is running ahead of schedule.
+  - `realtimeState` - one of `ADDED` (not present in the timetable), `CANCELED`, `MODIFIED` (the pattern has changed), `SCHEDULED` (no real-time information used), `UPDATED` (the pattern stays the same, while the times may be adjusted slightly).
+  - `headsign` - the headsign when the vehicle is at this stop.
+  - `route` - the short name of the route the vehicle is following, for example a bus number.
+  - `shortHeadsign`- if the length of `headsign` is over 15 characters, then the first word from `headsign` (e.g. "Mattby (M) via Kilo" becomes "Mattby"), otherwise the whole value of `headsign`.
+- `compact_departures` - a string, up to 28 characters long, combining the route and departure time of the next few departures. For example, `19:42 P, :47 A, :52 P` means train P departs at 19:42, followed by train A at 19:47, then P at 19:52. This is designed to display on small screens.
 
 ### Cards
 
@@ -93,6 +103,11 @@ content: >-
 ```
 
 Thanks to [@samhaa](https://github.com/samhaa) for contributing the markdown example.
+
+### Devices
+
+- To display departures on an NSPanel, see [this comment by Vitaly Repin](https://github.com/Mallonbacka/custom-component-digitransit/pull/129#issuecomment-2835639022).
+
 
 ## Credits
 
