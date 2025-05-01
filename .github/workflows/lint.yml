@@ -8,10 +8,14 @@ on:
     branches:
       - "main"
 
+permissions: {}
+
 jobs:
   ruff:
     name: "Ruff"
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: read
     steps:
         - name: "Checkout the repository"
           uses: "actions/checkout@v4.2.2"
