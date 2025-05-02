@@ -61,6 +61,14 @@ The attributes are as follows:
 
 You can show the data on a dashboard using a card. To use the following examples, create a card using the "code editor" view to add a YAML definition, and swap `sensor.pasila_h0089_next_departure` to your own sensor ID.
 
+#### HSL-style departures card
+
+This custom card, in the style of HSL's departures signs, is available from the [Leissson/HSL-Departure-Card repository](https://github.com/Leissson/HSL-Departure-Card). It can be installed with HACS.
+
+![Screenshot of a dashboard card with the heading "Pasila (H0089) next departure", an icon that looks like a train and the value 26 minutes](docs/hsl_style_card.png)
+
+Follow the instructions in the repository to install and configure it.
+
 #### Entity Card
 
 Adding the sensor to an "Entity Card" shows the name, icon and number of minutes to the next departure (on any line):
@@ -107,7 +115,6 @@ Thanks to [@samhaa](https://github.com/samhaa) for contributing the markdown exa
 ### Devices
 
 - To display departures on an NSPanel, see [this comment by Vitaly Repin](https://github.com/Mallonbacka/custom-component-digitransit/pull/129#issuecomment-2835639022).
-
 
 ## Credits
 
