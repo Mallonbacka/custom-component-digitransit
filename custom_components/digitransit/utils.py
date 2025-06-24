@@ -54,9 +54,9 @@ def departure_to_string(departure, hide_hours=False):
     """Convert a single departure to a string of route number + departure time."""
     tm_str = ""
     if not hide_hours:
-        tm_str = f"{departure["realtimeDeparture"].hour:02d}"
-    tm_str = tm_str + ":" + f"{departure["realtimeDeparture"].minute:02d}"
-    return f"{tm_str} {departure["route"]}"
+        tm_str = f"{departure['realtimeDeparture'].hour:02d}"
+    tm_str = tm_str + ":" + f"{departure['realtimeDeparture'].minute:02d}"
+    return f"{tm_str} {departure['route']}"
 
 
 def short_headsign(full_headsign):
