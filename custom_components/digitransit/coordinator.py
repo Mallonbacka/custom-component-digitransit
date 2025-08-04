@@ -24,6 +24,7 @@ class DigitransitDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         client: DigitransitGraphQLWrapper,
+        config_entry: ConfigEntry,
     ) -> None:
         """Initialize the coordinator."""
         self.client = client
@@ -32,6 +33,7 @@ class DigitransitDataUpdateCoordinator(DataUpdateCoordinator):
             logger=LOGGER,
             name=DOMAIN,
             update_interval=timedelta(minutes=1),
+            config_entry=config_entry,
         )
 
     async def _async_update_data(self):
