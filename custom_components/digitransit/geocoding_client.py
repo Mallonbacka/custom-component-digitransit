@@ -25,7 +25,7 @@ class GeocodingClient:
         if self.search_lang is not None:
             params["lang"] = self.search_lang
 
-        response = requests.get(SEARCH_ENDPOINT, params)
+        response = requests.get(SEARCH_ENDPOINT, params=params)
         return {
             self.trim_gtfs_id(feat["properties"]["id"]): self.format_label(
                 feat["properties"]
