@@ -39,7 +39,10 @@ class DigitransitDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data from endpoint."""
         try:
-            return await self.client.get_stop_data(self.config_entry.data["gtfs_id"])
+            return await self.client.get_stop_data(
+                self.config_entry.data["gtfs_id"],
+                self.config_entry.data["number_of_departures"],
+            )
         except DigitransitNotAuthenticatedError:
             ir.async_create_issue(
                 self.hass,

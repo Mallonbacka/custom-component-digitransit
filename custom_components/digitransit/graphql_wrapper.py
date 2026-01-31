@@ -32,7 +32,7 @@ class DigitransitGraphQLWrapper:
         self.data_region = data_region
 
         route_lang = "*" if route_lang is None else route_lang
-        headers = { "Accept-Language": route_lang }
+        headers = {"Accept-Language": route_lang}
 
         self.client = GraphqlClient(endpoint=self.endpoint(), headers=headers)
 
@@ -112,11 +112,15 @@ class DigitransitGraphQLWrapper:
             self.sync_get_stop_name_and_id_by_gtfs, gtfs_id
         )
 
-    def sync_get_stop_data(self, gtfs_id):
+    def sync_get_stop_data(self, gtfs_id, number_of_departures):
         """Get stop times from a saved GTFS id."""
         try:
-            query = """{ stop(id: "$stop_id") { name, vehicleMode, stoptimesWithoutPatterns { scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign, trip { routeShortName } } } }"""
-            results = self.client.execute(query=query.replace("$stop_id", gtfs_id))
+            query = """{ stop(id: "$stop_id") { name, vehicleMode, stoptimesWithoutPatterns(numberOfDepartures: $number_of_departures) { scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign, trip { routeShortName } } } }"""
+            results = self.client.execute(
+                query=query.replace("$stop_id", gtfs_id).replace(
+                    "$number_of_departures", str(number_of_departures)
+                )
+            )
             LOGGER.debug(results)
             return results
         except requests.exceptions.HTTPError as exception:
@@ -125,6 +129,8 @@ class DigitransitGraphQLWrapper:
             else:
                 raise exception
 
-    async def get_stop_data(self, gtfs_id):
+    async def get_stop_data(self, gtfs_id, number_of_departures):
         """Call sync_get_stop_data async."""
-        return await self.hass.async_add_executor_job(self.sync_get_stop_data, gtfs_id)
+        return await self.hass.async_add_executor_job(
+            self.sync_get_stop_data, gtfs_id, number_of_departures
+        )
