@@ -61,15 +61,21 @@ async def async_migrate_entry(hass, entry):
     """Migrate config to latest version."""
     LOGGER.debug("Migrating configuration from version %s", entry.version)
 
-    if entry.version > 1:
+    if entry.version > 3:
         return False
+
+    if entry.version == 2:
+        new_data = {**entry.data}
+        new_data["number_of_departures"] = entry.data.get("number_of_departures", 5)
+        pass
 
     if entry.version == 1:
         new_data = {**entry.data}
         new_data["data_region"] = entry.data.get("data_region", "hsl")
+        new_data["number_of_departures"] = entry.data.get("number_of_departures", 5)
         pass
 
-    hass.config_entries.async_update_entry(entry, data=new_data, version=2)
+    hass.config_entries.async_update_entry(entry, data=new_data, version=3)
 
     LOGGER.debug("Migration to configuration version %s successful", entry.version)
 

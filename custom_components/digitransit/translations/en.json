@@ -22,7 +22,8 @@
             "select_stop": {
                 "description": "Choose a stop from the list.",
                 "data": {
-                    "stop_gtfs_id": "Stop to monitor"
+                    "stop_gtfs_id": "Stop to monitor",
+                    "number_of_departures": "Number of departures to show"
                 }
             }
         },

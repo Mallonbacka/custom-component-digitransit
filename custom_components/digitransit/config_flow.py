@@ -19,7 +19,7 @@ from .graphql_wrapper import (
 class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Digitransit instance."""
 
-    VERSION = 2
+    VERSION = 3
 
     data: dict[str, Any] | None
 
@@ -144,9 +144,13 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             stop_name, gtfs_id = await self._get_stop_name_and_id_by_gtfs(
                 user_input["stop_gtfs_id"]
             )
+            config_data = {
+                "gtfs_id": gtfs_id,
+                "number_of_departures": int(user_input["number_of_departures"]),
+            }
             return self.async_create_entry(
                 title=stop_name,
-                data=(self.data or {}) | user_input | {"gtfs_id": gtfs_id},
+                data=(self.data or {}) | user_input | config_data,
             )
         else:
             # Show the list
@@ -166,7 +170,16 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             selector.SelectSelectorConfig(
                                 options=select_options,
                             ),
-                        )
+                        ),
+                        vol.Required(
+                            "number_of_departures",
+                            default=(user_input or {}).get("number_of_departures", 5),
+                        ): selector.NumberSelector(
+                            selector.NumberSelectorConfig(
+                                min=1,
+                                mode=selector.NumberSelectorMode.BOX,
+                            )
+                        ),
                     }
                 ),
             )
