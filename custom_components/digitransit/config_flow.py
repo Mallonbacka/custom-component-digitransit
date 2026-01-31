@@ -32,7 +32,9 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 all_feeds = await self.all_feeds(
-                    user_input["digitransit_api_key"], user_input["data_region"], user_input["route_lang"],
+                    user_input["digitransit_api_key"],
+                    user_input["data_region"],
+                    user_input["route_lang"],
                 )
             except DigitransitNotAuthenticatedError:
                 _errors["base"] = "auth"
@@ -66,7 +68,9 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             translation_key="data_regions",
                         ),
                     ),
-                    vol.Required("route_lang", default=(user_input or {}).get("route_lang", None),
+                    vol.Required(
+                        "route_lang",
+                        default=(user_input or {}).get("route_lang", None),
                     ): selector.SelectSelector(
                         selector.SelectSelectorConfig(
                             options=["fi", "sv", "en"],
@@ -76,6 +80,7 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=_errors,
+            description_placeholders={"digitransit_url": "https://digitransit.fi/"},
         )
 
     async def async_step_stop_info(
@@ -172,7 +177,9 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self.feed_id = feed_id
         return await self._search_for_stop(search_term)
 
-    async def all_feeds(self, digitransit_api_key: str, data_region: str, route_lang: str) -> dict:
+    async def all_feeds(
+        self, digitransit_api_key: str, data_region: str, route_lang: str
+    ) -> dict:
         """Get all regions."""
         self.api_key = digitransit_api_key
         self.data_region = data_region
@@ -186,7 +193,9 @@ class DigitransitFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         assert self.data
         assert self.data["digitransit_api_key"]
         assert self.data["route_lang"]
-        client = GeocodingClient(self.data["digitransit_api_key"], self.data["route_lang"])
+        client = GeocodingClient(
+            self.data["digitransit_api_key"], self.data["route_lang"]
+        )
         return await self.hass.async_add_executor_job(
             client.search, self.feed_id, search_term
         )
